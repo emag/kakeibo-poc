@@ -10,25 +10,38 @@ import zio.aws.core.config.CommonAwsConfig
 import zio.aws.{dynamodb, netty}
 import zio.dynamodb.DynamoDBQuery.{get, put}
 import zio.dynamodb.{DynamoDBExecutor, ProjectionExpression}
-import zio.schema.{DeriveSchema, Schema}
 import zio.{ZIO, ZIOAppDefault, ZLayer}
 
 import java.net.URI
+import java.time.{Instant, LocalDate}
 
 object Main extends ZIOAppDefault {
 
-  final case class Person(id: Int, firstName: String)
-  object Person {
-    implicit lazy val schema: Schema.CaseClass2[Int, String, Person] =
-      DeriveSchema.gen[Person]
-    val (id, firstName) = ProjectionExpression.accessors[Person]
-  }
-  val examplePerson = Person(1, "avi")
+  val exampleEntry1 = Entry(
+    id = 1,
+    date = LocalDate.of(2025, 12, 1),
+    debit = "A bank",
+    credit = "cash",
+    amount = 10_000,
+    timestamp = Instant.now()
+  )
+  val exampleEntry2 = Entry(
+    id = 1,
+    date = LocalDate.of(2025, 12, 1),
+    debit = "cash",
+    credit = "bank",
+    amount = 10_000,
+    timestamp = Instant.now()
+  )
+  val exampleJournal1 = Journal(aggId = 1, entries = List(exampleEntry1))
 
   private val program = for {
-    _ <- put("personTable", examplePerson).execute
-    person <- get("personTable")(Person.id.partitionKey === 1).execute
-    _ <- zio.Console.printLine(s"hello $person")
+    _ <- put("entry", exampleEntry1).execute
+    entry <- get("entry")(Entry.id.partitionKey === 1).execute
+    _ <- put("journal", exampleJournal1).execute
+    journal <- get("journal")(Journal.aggId.partitionKey === 1).execute
+    _ <- zio.Console.printLine(entry)
+    _ <- zio.Console.printLine(journal)
   } yield ()
 
   override def run =
