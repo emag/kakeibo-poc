@@ -35,10 +35,13 @@ object Main extends ZIOAppDefault {
   )
   val exampleJournal1 = Journal(aggId = 1, entries = List(exampleEntry1))
 
+  val putEntry = put("entry", exampleEntry1)
+  val putJournal = put("journal", exampleJournal1)
+  val tx = (putEntry zip putJournal).transaction
+
   private val program = for {
-    _ <- put("entry", exampleEntry1).execute
+    _ <- tx.execute
     entry <- get("entry")(Entry.id.partitionKey === 1).execute
-    _ <- put("journal", exampleJournal1).execute
     journal <- get("journal")(Journal.aggId.partitionKey === 1).execute
     _ <- zio.Console.printLine(entry)
     _ <- zio.Console.printLine(journal)
