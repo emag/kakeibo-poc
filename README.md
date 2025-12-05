@@ -12,8 +12,8 @@ awslocal dynamodb create-table \
     --billing-mode PAY_PER_REQUEST
 
 awslocal dynamodb create-table \
-    --table-name entry \
-    --attribute-definitions AttributeName=id,AttributeType=N \
+    --table-name event \
+    --attribute-definitions AttributeName=id,AttributeType=S \
     --key-schema AttributeName=id,KeyType=HASH \
     --billing-mode PAY_PER_REQUEST \
     --stream-specification StreamEnabled=true,StreamViewType=NEW_AND_OLD_IMAGES
@@ -52,7 +52,7 @@ awslocal lambda invoke \
 ```console
 awslocal lambda create-event-source-mapping \
     --function-name kakeibo-bs \
-    --event-source arn:aws:dynamodb:us-east-1:000000000000:table/entry/stream/2025-12-02T07:46:56.534  \
+    --event-source arn:aws:dynamodb:us-east-1:000000000000:table/event/stream/2025-12-05T07:34:41.438  \
     --batch-size 1 \
     --starting-position TRIM_HORIZON
 ```

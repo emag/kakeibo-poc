@@ -4,34 +4,56 @@ import zio.dynamodb.ProjectionExpression
 import zio.schema.{DeriveSchema, Schema}
 
 import java.time.{Instant, LocalDate}
+import java.util.UUID
 
-final case class Journal(aggId: Int, entries: List[Entry])
+final case class Journal(aggId: Int, entries: List[Entry]) {
+  def addEntry(eventId: UUID, entry: Entry): (Journal, EntryAdded) = {
+    val newJournal = this.copy(entries = entries :+ entry)
+    val event = EntryAdded(entry, eventId.toString, Instant.now())
+    (newJournal, event)
+  }
+}
 object Journal {
-  implicit lazy val schema: Schema.CaseClass2[Int, List[Entry], Journal] = DeriveSchema.gen[Journal]
+  def init(eventId: UUID, aggId: Int): (Journal, JournalInitialized) = {
+    val initialJournal = Journal(aggId, Nil)
+    val event = JournalInitialized(aggId, eventId.toString, Instant.now())
+    (initialJournal, event)
+  }
 
+  implicit lazy val schema: Schema.CaseClass2[Int, List[Entry], Journal] =
+    DeriveSchema.gen[Journal]
   val (aggId, entries) = ProjectionExpression.accessors[Journal]
 }
 
 final case class Entry(
-    id: Int,
     date: LocalDate,
-    debit: String,
-    credit: String,
-    amount: BigDecimal,
-    timestamp: Instant
+    debit: AccountTitle,
+    credit: AccountTitle,
+    amount: BigDecimal
 )
 object Entry {
-  implicit lazy val schema: Schema.CaseClass6[
-    Int,
+  implicit lazy val schema: Schema.CaseClass4[
     LocalDate,
-    String,
-    String,
+    AccountTitle,
+    AccountTitle,
     BigDecimal,
-    Instant,
     Entry
   ] =
     DeriveSchema.gen[Entry]
 
-  val (id, date, debit, credit, amount, timestamp) =
-    ProjectionExpression.accessors[Entry]
+  val (date, debit, credit, amount) = ProjectionExpression.accessors[Entry]
+}
+
+final case class AccountTitle(content: String, group: AccountTitleGroup)
+
+enum AccountTitleGroup {
+  case Asset
+  case Liability
+  case NetAsset
+  case Expense
+  case Revenue
+}
+object AccountTitleGroup {
+  def fromString(s: String): Option[AccountTitleGroup] =
+    values.find(_.toString.equalsIgnoreCase(s))
 }
