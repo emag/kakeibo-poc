@@ -1,1 +1,6 @@
+.bsp
 .localstack_volume
+.metals
+.scala-build
+.vscode
+output.txt

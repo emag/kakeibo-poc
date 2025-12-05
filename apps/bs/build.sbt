@@ -1,6 +1,6 @@
 import Dependencies.*
 
-name := "kakeibo-api"
+name := "kakeibo-bs"
 
 ThisBuild / scalaVersion := "3.7.4"
 ThisBuild / scalacOptions ++= Seq(
@@ -25,9 +25,15 @@ lazy val root = project
   .in(file("."))
   .settings(
     libraryDependencies ++= Seq(
-      "dev.zio" %% "zio-dynamodb" % "1.0.0-RC23",
+      "com.amazonaws" % "aws-lambda-java-core" % "1.4.0",
+      "com.amazonaws" % "aws-lambda-java-events" % "3.16.1",
+      "dev.zio" %% "zio" % zioVersion,
       "dev.zio" %% "zio-test" % zioVersion % Test,
       "dev.zio" %% "zio-test-sbt" % zioVersion % Test,
       "dev.zio" %% "zio-test-magnolia" % zioVersion % Test
-    )
+    ),
+    assembly / assemblyMergeStrategy := {
+      case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+      case x => MergeStrategy.first
+    }
   )
