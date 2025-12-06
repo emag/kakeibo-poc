@@ -13,8 +13,6 @@ import scala.jdk.CollectionConverters.*
 
 class Handler extends RequestHandler[DynamodbEvent, String] {
 
-  private val repository = new SlickRepository()
-
   override def handleRequest(event: DynamodbEvent, context: Context): String = {
     val logger = context.getLogger
 
@@ -43,47 +41,86 @@ class Handler extends RequestHandler[DynamodbEvent, String] {
   private def processJournalInitialized(
       payload: Map[String, AttributeValue],
       logger: LambdaLogger
-  ) = {
+  ): Unit = {
     logger.log("Process JournalInitialized", LogLevel.DEBUG)
-
-    try {
-      val journalId = payload.get("journalId").map(_.getS).getOrElse("0").toInt
-
-      val bs = BS(
-        aggId = journalId,
-        asset = BigDecimal(0),
-        liability = BigDecimal(0)
-      )
-
-      val pl = PL(
-        aggId = journalId,
-        expense = BigDecimal(0),
-        revenue = BigDecimal(0)
-      )
-
-      repository.insertBS(bs)
-      repository.insertPL(pl)
-
-      logger.log(
-        s"Successfully initialized BS and PL for journalId: $journalId",
-        LogLevel.INFO
-      )
-
-    } catch {
-      case ex: Exception =>
-        logger.log(
-          s"Error processing JournalInitialized: ${ex.getMessage}",
-          LogLevel.ERROR
-        )
-        throw ex
-    }
+    val aggId = payload
+      .getOrElse("aggId", throw new IllegalArgumentException("messing aggId"))
+      .getN
+      .toInt
+    Db.insert(aggId)
+    logger.log("Processed JournalInitialized successfully", LogLevel.DEBUG)
   }
 
   private def processEntryAdded(
       payload: Map[String, AttributeValue],
       logger: LambdaLogger
-  ) = {
+  ): Unit = {
     logger.log("Process EntryAdded", LogLevel.DEBUG)
-    payload.map { case (k, v) => println(s"key: $k, value: $v") }
+    val aggId = payload
+      .getOrElse("aggId", throw new IllegalArgumentException("messing aggId"))
+      .getN
+      .toInt
+    val entry = payload
+      .getOrElse("entry", throw new IllegalArgumentException("messing entry"))
+      .getM
+      .asScala
+    val amount = BigDecimal(
+      entry
+        .getOrElse(
+          "amount",
+          throw new IllegalArgumentException("messing entry - amount")
+        )
+        .getN
+    )
+    val debitGroup = entry
+      .getOrElse(
+        "debit",
+        throw new IllegalArgumentException("missing entry - debit")
+      )
+      .getM
+      .asScala
+      .getOrElse(
+        "group",
+        throw new IllegalArgumentException("missing debit - group")
+      )
+      .getS
+    val creditGroup = entry
+      .getOrElse(
+        "credit",
+        throw new IllegalArgumentException("missing entry - credit")
+      )
+      .getM
+      .asScala
+      .getOrElse(
+        "group",
+        throw new IllegalArgumentException("missing credit - group")
+      )
+      .getS
+
+    val assetDelta =
+      if (debitGroup == "Asset") amount
+      else if (creditGroup == "Asset") -amount
+      else BigDecimal(0)
+    val liabilityDelta =
+      if (debitGroup == "Liability") -amount
+      else if (creditGroup == "Liability") amount
+      else BigDecimal(0)
+    val expenseDelta =
+      if (debitGroup == "Expense") amount
+      else if (creditGroup == "Expense") -amount
+      else BigDecimal(0)
+    val revenueDelta =
+      if (debitGroup == "Revenue") -amount
+      else if (creditGroup == "Revenue") amount
+      else BigDecimal(0)
+
+    Db.update(
+      aggId = aggId,
+      assetDelta = assetDelta,
+      liabilityDelta = liabilityDelta,
+      expenseDelta = expenseDelta,
+      revenueDelta = revenueDelta
+    )
+    logger.log("Processed EntryAdded successfully", LogLevel.DEBUG)
   }
 }

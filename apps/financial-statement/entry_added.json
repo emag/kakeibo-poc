@@ -16,20 +16,13 @@
           },
           "payload": {
             "M": {
+              "aggId": {
+                "N": "1"
+              },
               "entry": {
                 "M": {
                   "amount": {
                     "N": "10000"
-                  },
-                  "credit": {
-                    "M": {
-                      "group": {
-                        "S": "Asset"
-                      },
-                      "content": {
-                        "S": "Cash"
-                      }
-                    }
                   },
                   "debit": {
                     "M": {
@@ -38,6 +31,16 @@
                       },
                       "content": {
                         "S": "A bank"
+                      }
+                    }
+                  },
+                  "credit": {
+                    "M": {
+                      "group": {
+                        "S": "Asset"
+                      },
+                      "content": {
+                        "S": "Cash"
                       }
                     }
                   },

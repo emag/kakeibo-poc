@@ -1,5 +1,3 @@
-import Dependencies.*
-
 name := "kakeibo-financial-statement"
 
 ThisBuild / scalaVersion := "3.7.4"
@@ -27,9 +25,8 @@ lazy val root = project
     libraryDependencies ++= Seq(
       "com.amazonaws" % "aws-lambda-java-core" % "1.4.0",
       "com.amazonaws" % "aws-lambda-java-events" % "3.16.1",
-      "com.typesafe.slick" %% "slick" % slickVersion,
-      "com.typesafe.slick" %% "slick-hikaricp" % slickVersion,
-      ("com.mysql" % "mysql-connector-j" % "8.0.33")
+      "com.lihaoyi" %% "scalasql" % "0.2.3",
+      ("com.mysql" % "mysql-connector-j" % "9.5.0")
         .exclude("com.google.protobuf", "protobuf-java")
     ),
     assembly / assemblyMergeStrategy := {

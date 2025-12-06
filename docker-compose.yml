@@ -11,6 +11,8 @@ services:
     volumes:
       - "${LOCALSTACK_VOLUME_DIR:-./.localstack_volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - kakeibo-poc
   mysql:
     container_name: "${MYSQL_DOCKER_NAME:-mysql}"
     image: mysql:8.4.7
@@ -23,3 +25,8 @@ services:
     volumes:
       - ./mysql/initdb:/docker-entrypoint-initdb.d
       - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - kakeibo-poc
+networks:
+  kakeibo-poc:
+    driver: bridge
