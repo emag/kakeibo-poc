@@ -1,4 +1,4 @@
-package kakeibo.bs
+package kakeibo.financial_statement
 
 import com.amazonaws.services.lambda.runtime.{Context, RequestHandler}
 import com.amazonaws.services.lambda.runtime.events.DynamodbEvent

@@ -1,6 +1,6 @@
 import Dependencies.*
 
-name := "kakeibo-bs"
+name := "kakeibo-financial-statement"
 
 ThisBuild / scalaVersion := "3.7.4"
 ThisBuild / scalacOptions ++= Seq(
