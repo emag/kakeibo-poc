@@ -31,6 +31,9 @@ lazy val root = project
       "dev.zio" %% "zio-test" % zioVersion % Test,
       "dev.zio" %% "zio-test-sbt" % zioVersion % Test,
       "dev.zio" %% "zio-test-magnolia" % zioVersion % Test,
+      "io.getquill" %% "quill-zio" % quillVersion,
+      "io.getquill" %% "quill-jdbc-zio" % quillVersion,
+      "com.mysql" % "mysql-connector-j" % "9.5.0",
       "com.fasterxml.jackson.core" % "jackson-databind" % "2.16.1",
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.16.1"
     ),

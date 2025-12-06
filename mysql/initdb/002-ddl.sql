@@ -1,0 +1,13 @@
+USE financial_statement;
+
+CREATE TABLE IF NOT EXISTS bs (
+    agg_id INT PRIMARY KEY,
+    asset DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    liability DECIMAL(15,2) NOT NULL DEFAULT 0.00
+) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS pl (
+    agg_id INT PRIMARY KEY,
+    expense DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    revenue DECIMAL(15,2) NOT NULL DEFAULT 0.00
+) ENGINE = InnoDB;
