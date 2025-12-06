@@ -8,23 +8,15 @@ import com.amazonaws.services.lambda.runtime.{
   LambdaLogger,
   RequestHandler
 }
-import com.fasterxml.jackson.databind.{ObjectMapper, SerializationFeature}
-import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 import scala.jdk.CollectionConverters.*
 
 class Handler extends RequestHandler[DynamodbEvent, String] {
 
-  private val objectMapper = new ObjectMapper()
-    .registerModule(DefaultScalaModule)
-    .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+  private val repository = new SlickRepository()
 
   override def handleRequest(event: DynamodbEvent, context: Context): String = {
     val logger = context.getLogger
-
-    val jsonOutput = objectMapper.writeValueAsString(event)
-    logger.log("Received DynamoDB Stream Event as JSON:", LogLevel.DEBUG)
-    logger.log(jsonOutput, LogLevel.DEBUG)
 
     event.getRecords.asScala.foreach { record =>
       val image = record.getDynamodb.getNewImage
@@ -53,7 +45,38 @@ class Handler extends RequestHandler[DynamodbEvent, String] {
       logger: LambdaLogger
   ) = {
     logger.log("Process JournalInitialized", LogLevel.DEBUG)
-    payload.map { case (k, v) => println(s"key: $k, value: $v") }
+
+    try {
+      val journalId = payload.get("journalId").map(_.getS).getOrElse("0").toInt
+
+      val bs = BS(
+        aggId = journalId,
+        asset = BigDecimal(0),
+        liability = BigDecimal(0)
+      )
+
+      val pl = PL(
+        aggId = journalId,
+        expense = BigDecimal(0),
+        revenue = BigDecimal(0)
+      )
+
+      repository.insertBS(bs)
+      repository.insertPL(pl)
+
+      logger.log(
+        s"Successfully initialized BS and PL for journalId: $journalId",
+        LogLevel.INFO
+      )
+
+    } catch {
+      case ex: Exception =>
+        logger.log(
+          s"Error processing JournalInitialized: ${ex.getMessage}",
+          LogLevel.ERROR
+        )
+        throw ex
+    }
   }
 
   private def processEntryAdded(
