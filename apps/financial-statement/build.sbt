@@ -30,7 +30,9 @@ lazy val root = project
       "dev.zio" %% "zio" % zioVersion,
       "dev.zio" %% "zio-test" % zioVersion % Test,
       "dev.zio" %% "zio-test-sbt" % zioVersion % Test,
-      "dev.zio" %% "zio-test-magnolia" % zioVersion % Test
+      "dev.zio" %% "zio-test-magnolia" % zioVersion % Test,
+      "com.fasterxml.jackson.core" % "jackson-databind" % "2.16.1",
+      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.16.1"
     ),
     assembly / assemblyMergeStrategy := {
       case PathList("META-INF", xs @ _*) => MergeStrategy.discard

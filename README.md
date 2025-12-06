@@ -49,7 +49,7 @@ awslocal lambda create-function \
 ```console
 awslocal lambda update-function-code \
     --function-name kakeibo-financial-statement \
-    --zip-file fileb://apps/bs/target/scala-3.7.4/kakeibo-financial-statement-assembly-0.1.0-SNAPSHOT.jar 
+    --zip-file fileb://apps/financial-statement/target/scala-3.7.4/kakeibo-financial-statement-assembly-0.1.0-SNAPSHOT.jar
 ```
 
 ## Invoke Lambda manually
@@ -57,7 +57,14 @@ awslocal lambda update-function-code \
 ```console
 awslocal lambda invoke \
     --function-name kakeibo-financial-statement \
-    --payload file://apps/financial-statement/event.json \
+    --payload file://apps/financial-statement/journal_initialized.json \
+    --cli-binary-format raw-in-base64-out output.txt
+```
+
+```
+awslocal lambda invoke \
+    --function-name kakeibo-financial-statement \
+    --payload file://apps/financial-statement/entry_added.json \
     --cli-binary-format raw-in-base64-out output.txt
 ```
 

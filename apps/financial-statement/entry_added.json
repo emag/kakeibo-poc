@@ -1,0 +1,58 @@
+{
+  "Records": [
+    {
+      "dynamodb": {
+        "Keys": {
+          "id": {
+            "S": "d749a6ba-79b3-4a31-b670-d2bf2ac88495"
+          }
+        },
+        "NewImage": {
+          "eventType": {
+            "S": "entry_added"
+          },
+          "timestamp": {
+            "S": "2025-12-06T16:27:49.439189Z"
+          },
+          "payload": {
+            "M": {
+              "entry": {
+                "M": {
+                  "amount": {
+                    "N": "10000"
+                  },
+                  "credit": {
+                    "M": {
+                      "group": {
+                        "S": "Asset"
+                      },
+                      "content": {
+                        "S": "Cash"
+                      }
+                    }
+                  },
+                  "debit": {
+                    "M": {
+                      "group": {
+                        "S": "Asset"
+                      },
+                      "content": {
+                        "S": "A bank"
+                      }
+                    }
+                  },
+                  "date": {
+                    "S": "2025-12-01"
+                  }
+                }
+              }
+            }
+          },
+          "id": {
+            "S": "d749a6ba-79b3-4a31-b670-d2bf2ac88495"
+          }
+        }
+      }
+    }
+  ]
+}

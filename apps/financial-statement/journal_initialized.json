@@ -1,0 +1,31 @@
+{
+  "Records": [
+    {
+      "dynamodb": {
+        "Keys": {
+          "id": {
+            "S": "7b054322-b2e1-400f-848f-7e4305baba96"
+          }
+        },
+        "NewImage": {
+          "eventType": {
+            "S": "journal_initialized"
+          },
+          "timestamp": {
+            "S": "2025-12-06T16:13:45.905890Z"
+          },
+          "payload": {
+            "M": {
+              "aggId": {
+                "N": "1"
+              }
+            }
+          },
+          "id": {
+            "S": "7b054322-b2e1-400f-848f-7e4305baba96"
+          }
+        }
+      }
+    }
+  ]
+}
