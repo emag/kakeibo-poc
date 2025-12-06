@@ -13,9 +13,9 @@ final case class EntryAdded(
     override val eventType: String = "entry_added"
 ) extends Event[Payload]
 object EntryAdded {
-  final case class Payload(entry: Entry)
+  final case class Payload(aggId: Int, entry: Entry)
   object Payload {
-    implicit lazy val schema: Schema.CaseClass1[Entry, Payload] =
+    implicit lazy val schema: Schema.CaseClass2[Int, Entry, Payload] =
       DeriveSchema.gen[Payload]
     val entry = ProjectionExpression.accessors[Payload]
   }

@@ -79,7 +79,7 @@ awslocal dynamodb describe-table --table-name event
 ```console
 awslocal lambda create-event-source-mapping \
     --function-name kakeibo-financial-statement \
-    --event-source arn:aws:dynamodb:us-east-1:000000000000:table/event/stream/2025-12-06T15:23:15.176  \
+    --event-source arn:aws:dynamodb:us-east-1:000000000000:table/event/stream/2025-12-06T19:56:12.904  \
     --batch-size 1 \
     --starting-position TRIM_HORIZON
 ```

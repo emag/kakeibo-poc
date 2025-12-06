@@ -10,7 +10,11 @@ final case class Journal(aggId: Int, entries: List[Entry]) {
   def addEntry(eventId: UUID, entry: Entry): (Journal, EntryAdded) = {
     val newJournal = this.copy(entries = entries :+ entry)
     val event =
-      EntryAdded(eventId.toString, EntryAdded.Payload(entry), Instant.now())
+      EntryAdded(
+        eventId.toString,
+        EntryAdded.Payload(this.aggId, entry),
+        Instant.now()
+      )
     (newJournal, event)
   }
 }
