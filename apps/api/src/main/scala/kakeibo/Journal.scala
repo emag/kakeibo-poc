@@ -9,14 +9,19 @@ import java.util.UUID
 final case class Journal(aggId: Int, entries: List[Entry]) {
   def addEntry(eventId: UUID, entry: Entry): (Journal, EntryAdded) = {
     val newJournal = this.copy(entries = entries :+ entry)
-    val event = EntryAdded(entry, eventId.toString, Instant.now())
+    val event =
+      EntryAdded(eventId.toString, EntryAdded.Payload(entry), Instant.now())
     (newJournal, event)
   }
 }
 object Journal {
   def init(eventId: UUID, aggId: Int): (Journal, JournalInitialized) = {
     val initialJournal = Journal(aggId, Nil)
-    val event = JournalInitialized(aggId, eventId.toString, Instant.now())
+    val event = JournalInitialized(
+      eventId.toString,
+      JournalInitialized.Payload(aggId),
+      Instant.now()
+    )
     (initialJournal, event)
   }
 
